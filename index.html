@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+  .progressbar input[type="range"] {
+  -webkit-appearance:none;
+  width:290px;
+  height:5px;
+  border-radius:20px;
+  background:white;
+  outline:none;
+  overflow:hidden;
+}
+.progressbar input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  width:5px;
+  height:5px;
+  background:#C93B76;
+  box-shadow:-300px 0px 5px 300px #C93B76,-300px 10px 10px #C93B76;
+  cursor:pointer;
+}
+    
+
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+  
+</head>
+<body class=" flex bg-[url('./assets/bg.jpg')] bg-cover bg-no-repeat  bg-slate-800 h-screen justify-center items-center"  >
+
+    <div class="flex flex-col rounded-3xl items-center h-[500px] w-[320px] p-[20px] bg-[#121826a6] ">
+        <img src= "./assets/cover-1.png" alt="" class=" img rounded-3xl">
+
+        <ol class="flex flex-col items-center p-[15px]">
+            <h1 class="name text-[16px] text-white">Lost in the City Lights</h1>
+            <h1 class="artist text-[14px] text-[#4D5562]">Cosmo Sheldrake </h1>
+        </ol>
+         
+
+
+        <div class="flex flex-col items-center border2 border-green-500">
+
+
+            <audio class="player border-2 border-yellow-500">
+                <source src="./assets/lost-in-city-lights-145038.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            
+            <div class="progressbar  w-[290px] mb-[35px] ">
+                <h1 class="current float-left  text-[10px]  text-[#4D5562]">00:00</h1> 
+                <h1 class="total  float-right  text-[10px] text-[#4D5562]">00:00</h1> 
+                <input type="range" name="" id="" min="0"  max="100" step="0.1" value="0" class="pbar  float-end mt-1 cursor-pointer">
+            </div>
+            <ol class="controls relative bottom-0  space-x-3">
+                <button class="hover:bg-[#E5E7EB] rounded-2xl p-1.5"><img src="./assets/Stop_and_play_fill-1.svg" alt=""  onclick="changesong('backward')"> </button>
+                <button class="h-[50px] w-[50px] rounded-full shadow-[0px_0px_10px_#C93B76] bg-[#C93B76] btn "><img src="./assets/Play_fill.svg" alt="" class=" ml-2 p-0 btnimg"></button>
+                <button class="hover:bg-[#E5E7EB] rounded-2xl p-1.5"><img src="./assets/Stop_and_play_fill.svg" alt="" onclick="changesong('forward')"> </button>
+            </ol>
+            
+        </div>
+
+
+
+
+
+
+    </div>
+
+<Script>
+    var audio = document.querySelector('.player');// the audio/song.
+    var songcurrenttime = document.querySelector(".current");// the html element that will display the current audio time elasped
+    var songduration = document.querySelector(".total")
+    var pbar = document.querySelector(".pbar");
+    var playbtnimg = document.querySelector(".btnimg");
+    var playPauseBtn = document.querySelector('.btn');
+
+    let songs=[{song:'lost-in-city-lights-145038.mp3',songimg:"cover-1.png",artist:'Cosmo Sheldrake',songname:"Lost in city lights"},{song:'forest-lullaby-110624.mp3',songimg:"cover-2.png",artist:'Lesfm',songname:'Forest Lullaby'}];
+    var song=0;
+    var replay=false;
+
+    playPauseBtn.addEventListener("click", function() {
+      if (audio.paused) {
+        if(audio.currentTime == audio.duration){
+          replay=true;
+          console.log('replaying song');
+        }
+        audio.play();
+        playbtnimg.src = "./assets/pause_icon.svg"; // Pause icon
+      
+      } else {
+        audio.pause();
+        playbtnimg.src = "./assets/Play_fill.svg";
+        if(audio.currentTime !== audio.duration){
+          replay=false;
+        }
+      }
+    });
+    
+    function changesong(direction){
+      let name=document.querySelector(".name");
+      let artist=document.querySelector(".artist");
+      let img=document.querySelector('.img');
+      if (direction === 'forward'){
+        song=song+1;
+        if (song<=songs.length-1){
+          setTimeout(() => {
+          audio.src='./assets/' + songs[song].song;
+          name.textContent=songs[song].songname;
+          artist.textContent=songs[song].artist;
+          img.src='./assets/'+songs[song].songimg;
+          
+          audio.play();
+          playbtnimg.src = "./assets/pause_icon.svg"; // Pause icon
+          console.log("first ",songs.length);
+          console.log("song ",song);
+            
+          }, 250);
+        }
+        else{
+          console.log("song ",song);
+          song=-1;
+          changesong('forward');
+        }
+      }
+      if(direction === "backward"){
+        song=song-1
+        if (song<=songs.length-1 && song>=0){
+          audio.src='./assets/' + songs[song].song;
+          name.textContent=songs[song].songname;
+          artist.textContent=songs[song].artist;
+          img.src='./assets/'+songs[song].songimg; 
+          audio.play();  
+          playbtnimg.src = "./assets/pause_icon.svg"; // Pause icon
+          console.log("song ",song);
+        }
+        else{
+          console.log("song when backward",song);
+          song=songs.length;
+          changesong('backward');
+      }
+    }}
+     
+  
+
+
+
+    function formatTime(time) {  // converts th time into mins and seconds .
+    var minutes = Math.floor(time / 60);
+    var seconds = Math.floor(time % 60);
+    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
+
+
+audio.addEventListener('timeupdate',function(){
+        songduration.textContent=formatTime(audio.duration); // will manipulate/add the html element to show song's duration
+        songcurrenttime.textContent=formatTime(audio.currentTime);// will manipulate/add the html elemnt song's current time
+    });
+ 
+    
+
+pbar.addEventListener('input',function(){// triggers whenever the slider is dragged or if there is a click on the input bar
+  var newValue = parseInt(this.value); // a new value is assigned when there is a click/drag on the bar 
+  var newTime = (newValue * audio.duration) / 100; // calculates the distence the slider has to travel with the new value.
+  audio.currentTime = newTime;// reassigns the audio its current value
+  audio.play();
+  playbtnimg.src = "./assets/pause_icon.svg"; // Pause icon
+
+});
+
+
+let progressbar=()=>{
+  pbar.max=formatTime(audio.duration);  // sets the max value of the input[ type == range] to the audio.duration.
+  var currentTime = audio.currentTime;  // assigns the local variable 'currentTime'(which will be used after a few steps to calculate the distence the slider(of the input) has to travel with the change in time) the value of the 'audio's current time'.
+  var duration = audio.duration;// assigns the local variable 'duration' which will be used along current time
+  var percentage = (currentTime / duration) * 100;// determines the percentage of the distence the input slider has to travel per second.
+  pbar.value = percentage; // assign's the input value.
+
+};
+audio.addEventListener('timeupdate',progressbar);// added a event listner which will trigger the function 'progressbar' as the 'time' is 'updated/changes,progresses,moves forward etc'
+
+
+audio.addEventListener('ended',function(){ // triggers the function when the audio 'ends'
+  if(audio.currentTime == audio.duration ){ 
+    playbtnimg.src='./assets/replay.png'; // changes the 'Btnimg' from 'pause'(which is the last img) to 'replay img'
+    audio.pause(); // then it pauses the audio so when the button is 'clicked' it can check the condition i.e ' if( audio.pause() )  == ==>  if(audio.currentTime == audio.duration){ replay == true ;}'
+ 
+    setTimeout(() => {      
+      if(replay == false){    // the timeout function will wait for the 'PlayPauseBtn' to be clicked which will change the state of the variable 'replay'
+        changesong('forward');}  // it calls the function 'changesong' with the argument to move to the next song when the replay is 'false' and the '6 seconds' have passed
+      }, 6000); 
+       
+  }
+});
+    
+
+
+
+
+
+   
+
+
+    
+
+
+
+  
+</Script>    
+       
+</body>
+</html>
